@@ -1,0 +1,1298 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GEOMETRY DASH</title>
+  <style>
+    @font-face {
+      font-family: "Oxygene 1";
+      src:
+        url("./fonts/Oxygene1.woff2") format("woff2"),
+        url("./fonts/Oxygene1.woff") format("woff"),
+        url("./fonts/Oxygene1.ttf") format("truetype"),
+        url("./fonts/Oxygene1.otf") format("opentype");
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: Pusab;
+      src:
+        url("./fonts/Pusab.woff2") format("woff2"),
+        url("./fonts/Pusab.woff") format("woff"),
+        url("./fonts/Pusab.ttf") format("truetype"),
+        url("./fonts/Pusab.otf") format("opentype");
+      font-display: swap;
+    }
+
+    :root {
+      color-scheme: dark;
+      --bg: #111318;
+      --panel: #1f242b;
+      --panel-2: #2a3039;
+      --line: #3b4350;
+      --text: #f8fbff;
+      --muted: #aeb8c4;
+      --accent: #ffd536;
+      --cyan: #25c7ff;
+      --green: #35e26f;
+      --red: #ff4d5a;
+      --orange: #ff8c2d;
+      --blue: #4e82ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Pusab, "Arial Black", Impact, sans-serif;
+      letter-spacing: 1.2px;
+    }
+
+    button, input, textarea, select {
+      font: inherit;
+    }
+
+    #app {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      height: 100%;
+      min-width: 320px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      min-height: 64px;
+      padding: 10px 14px;
+      background: linear-gradient(180deg, #2c333e 0%, #1f242b 100%);
+      border-bottom: 2px solid #11151c;
+      box-shadow: 0 8px 24px rgba(0,0,0,.28);
+      z-index: 3;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 132px;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+
+    .brand strong {
+      font-size: clamp(18px, 2.1vw, 28px);
+      line-height: 1;
+      color: var(--accent);
+      font-family: "Oxygene 1", Pusab, "Arial Black", Impact, sans-serif;
+      letter-spacing: 1px;
+      text-shadow: 0 3px 0 #8b5a08, 0 0 16px rgba(255,213,54,.28);
+      white-space: nowrap;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font: 700 11px/1.1 Pusab, "Arial Black", Impact, sans-serif;
+      text-transform: none;
+    }
+
+    .toolrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      overflow-x: auto;
+      padding: 3px 0;
+      scrollbar-width: thin;
+    }
+
+    .group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px;
+      background: rgba(17,19,24,.58);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      flex: 0 0 auto;
+    }
+
+    .tool, .cmd {
+      display: inline-grid;
+      place-items: center;
+      min-width: 42px;
+      height: 38px;
+      padding: 0 10px;
+      color: var(--text);
+      background: #343b46;
+      border: 1px solid #4a5361;
+      border-radius: 7px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 2px 0 #11151c;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .tool {
+      width: 42px;
+      padding: 0;
+      font-size: 18px;
+    }
+
+    .icon {
+      position: relative;
+      display: block;
+      width: 24px;
+      height: 24px;
+    }
+
+    .icon.block {
+      background: var(--cyan);
+      border: 2px solid #e7f7ff;
+      box-shadow: inset 0 0 0 3px rgba(17,19,24,.22);
+    }
+
+    .icon.spike {
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-bottom: 24px solid #f5f7ff;
+      filter: drop-shadow(0 2px 0 #111318);
+    }
+
+    .icon.pad {
+      width: 28px;
+      height: 10px;
+      margin-top: 9px;
+      background: var(--accent);
+      border: 2px solid #8b5a08;
+      border-radius: 50%;
+    }
+
+    .icon.orb {
+      width: 22px;
+      height: 22px;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 10px currentColor;
+    }
+
+    .icon.yellow { background: var(--accent); color: var(--accent); }
+    .icon.green { background: var(--green); color: var(--green); }
+    .icon.blue { background: var(--blue); color: var(--blue); }
+    .icon.red { background: var(--red); color: var(--red); }
+
+    .icon.portal {
+      width: 20px;
+      height: 30px;
+      border: 4px solid currentColor;
+      border-radius: 50%;
+      box-shadow: 0 0 10px currentColor;
+    }
+
+    .icon.portal.blue { color: var(--cyan); background: transparent; }
+    .icon.portal.orange { color: var(--orange); background: transparent; }
+    .icon.portal.ship { color: #b569ff; background: transparent; }
+    .icon.portal.cube { color: #f5f7ff; background: transparent; }
+
+    .icon.eraser::before,
+    .icon.eraser::after {
+      content: "";
+      position: absolute;
+      left: 10px;
+      top: 0;
+      width: 4px;
+      height: 24px;
+      background: var(--red);
+      border-radius: 2px;
+    }
+
+    .icon.eraser::before { transform: rotate(45deg); }
+    .icon.eraser::after { transform: rotate(-45deg); }
+
+    .cmd {
+      min-width: 76px;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .tool.active, .cmd.active {
+      background: #f0bf27;
+      color: #141414;
+      border-color: #ffe17a;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 2px 0 #835b05;
+    }
+
+    .tool:hover, .cmd:hover { filter: brightness(1.12); }
+
+    .status {
+      display: grid;
+      justify-items: end;
+      gap: 2px;
+      min-width: 156px;
+      color: var(--muted);
+      font: 700 11px/1.2 Pusab, "Arial Black", Impact, sans-serif;
+    }
+
+    .status b {
+      color: var(--text);
+      font: 900 15px/1 Pusab, "Arial Black", Impact, sans-serif;
+    }
+
+    .stage {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 20% 18%, rgba(37,199,255,.18), transparent 28%),
+        linear-gradient(180deg, #182233 0%, #111318 58%, #0c0e12 100%);
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(9,11,15,.62);
+      z-index: 2;
+    }
+
+    .overlay.show { display: flex; }
+
+    .modal {
+      width: min(720px, 94vw);
+      padding: 22px;
+      background: var(--panel);
+      border: 2px solid #596579;
+      border-radius: 8px;
+      box-shadow: 0 20px 80px rgba(0,0,0,.48);
+    }
+
+    .modal h1 {
+      margin: 0 0 10px;
+      color: var(--accent);
+      font-family: "Oxygene 1", Pusab, "Arial Black", Impact, sans-serif;
+      font-size: clamp(32px, 7vw, 72px);
+      line-height: .9;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      text-shadow: 0 4px 0 #7c5208;
+    }
+
+    .modal p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font: 700 15px/1.45 Pusab, "Arial Black", Impact, sans-serif;
+    }
+
+    .modal .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .help-list {
+      display: grid;
+      gap: 8px;
+      margin: 0 0 18px;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+      font: 700 14px/1.35 Pusab, "Arial Black", Impact, sans-serif;
+    }
+
+    .help-list b {
+      color: var(--text);
+    }
+
+    .io {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      width: min(520px, calc(100vw - 28px));
+      display: none;
+      padding: 10px;
+      background: rgba(31,36,43,.97);
+      border: 1px solid #596579;
+      border-radius: 8px;
+      z-index: 4;
+    }
+
+    .io.show { display: block; }
+
+    .io textarea {
+      width: 100%;
+      height: 150px;
+      resize: vertical;
+      padding: 10px;
+      color: var(--text);
+      background: #111318;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font: 12px/1.4 Pusab, "Arial Black", Impact, sans-serif;
+    }
+
+    .io .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 780px) {
+      .topbar {
+        grid-template-columns: 1fr auto;
+        grid-template-rows: auto auto;
+      }
+      .brand { min-width: 0; }
+      .toolrow {
+        grid-column: 1 / -1;
+        order: 2;
+      }
+      .status { min-width: 118px; }
+      .cmd { min-width: 64px; padding: 0 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <strong>GEOMETRY DASH</strong>
+      </div>
+
+      <div class="toolrow" aria-label="Level editor tools">
+        <div class="group">
+          <button class="cmd active" id="placeModeBtn">Place</button>
+          <button class="cmd" id="editModeBtn">Edit Obj</button>
+        </div>
+        <div class="group">
+          <button class="tool active" data-tool="block" title="Block" aria-label="Block"><span class="icon block"></span></button>
+          <button class="tool" data-tool="spike" title="Spike" aria-label="Spike"><span class="icon spike"></span></button>
+          <button class="tool" data-tool="pad" title="Yellow jump pad" aria-label="Yellow jump pad"><span class="icon pad"></span></button>
+        </div>
+        <div class="group">
+          <button class="tool" data-tool="orb-yellow" title="Yellow orb" aria-label="Yellow orb"><span class="icon orb yellow"></span></button>
+          <button class="tool" data-tool="orb-green" title="Green orb" aria-label="Green orb"><span class="icon orb green"></span></button>
+          <button class="tool" data-tool="orb-blue" title="Blue orb" aria-label="Blue orb"><span class="icon orb blue"></span></button>
+          <button class="tool" data-tool="orb-red" title="Red orb" aria-label="Red orb"><span class="icon orb red"></span></button>
+        </div>
+        <div class="group">
+          <button class="tool" data-tool="portal-blue" title="Blue gravity portal" aria-label="Blue gravity portal"><span class="icon portal blue"></span></button>
+          <button class="tool" data-tool="portal-orange" title="Orange gravity portal" aria-label="Orange gravity portal"><span class="icon portal orange"></span></button>
+          <button class="tool" data-tool="portal-ship" title="Ship mode portal" aria-label="Ship mode portal"><span class="icon portal ship"></span></button>
+          <button class="tool" data-tool="portal-cube" title="Cube mode portal" aria-label="Cube mode portal"><span class="icon portal cube"></span></button>
+        </div>
+        <div class="group">
+          <button class="tool" data-tool="eraser" title="Eraser" aria-label="Eraser"><span class="icon eraser"></span></button>
+          <button class="cmd" id="playBtn">Play</button>
+          <button class="cmd" id="stopBtn">Edit</button>
+        </div>
+        <div class="group">
+          <button class="cmd" id="saveBtn">Save</button>
+          <button class="cmd" id="loadBtn">Import</button>
+          <button class="cmd" id="clearBtn">Clear</button>
+          <button class="cmd" id="helpBtn">Help</button>
+        </div>
+      </div>
+
+      <div class="status">
+        <b id="modeLabel">Editor</b>
+        <span id="readout">Tool: block</span>
+      </div>
+    </header>
+
+    <main class="stage">
+      <canvas id="game" aria-label="Geometry Dash remake canvas"></canvas>
+
+      <section class="overlay show" id="startOverlay">
+        <div class="modal">
+          <h1>GEOMETRY DASH</h1>
+          <div class="actions">
+            <button class="cmd active" id="startPlayBtn">Play level</button>
+            <button class="cmd" id="startEditBtn">Open editor</button>
+            <button class="cmd" id="startHelpBtn">Help</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="overlay" id="helpOverlay">
+        <div class="modal">
+          <h1>Help</h1>
+          <ul class="help-list">
+            <li><b>Play:</b> W, Space, Arrow Up, or click/touch to jump or thrust.</li>
+            <li><b>Place:</b> choose an object, then click the grid.</li>
+            <li><b>Edit Obj:</b> select an object, drag to move it, Q/E to rotate, Delete to remove.</li>
+            <li><b>Save / Import:</b> copy or paste level JSON.</li>
+            <li><b>Ship orbs:</b> press while overlapping; holding before the orb will not buffer.</li>
+          </ul>
+          <div class="actions">
+            <button class="cmd active" id="closeHelpBtn">Close</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="overlay" id="endOverlay">
+        <div class="modal">
+          <h1 id="endTitle">Complete</h1>
+          <p id="endText">You reached the end marker.</p>
+          <div class="actions">
+            <button class="cmd active" id="againBtn">Again</button>
+            <button class="cmd" id="backEditBtn">Editor</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="io" id="ioPanel">
+        <textarea id="levelText" spellcheck="false"></textarea>
+        <div class="actions">
+          <button class="cmd" id="copyBtn">Copy</button>
+          <button class="cmd active" id="applyBtn">Apply</button>
+          <button class="cmd" id="closeIoBtn">Close</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const canvas = document.getElementById("game");
+      const ctx = canvas.getContext("2d");
+      const toolButtons = [...document.querySelectorAll("[data-tool]")];
+      const modeLabel = document.getElementById("modeLabel");
+      const readout = document.getElementById("readout");
+      const startOverlay = document.getElementById("startOverlay");
+      const helpOverlay = document.getElementById("helpOverlay");
+      const endOverlay = document.getElementById("endOverlay");
+      const endTitle = document.getElementById("endTitle");
+      const endText = document.getElementById("endText");
+      const ioPanel = document.getElementById("ioPanel");
+      const levelText = document.getElementById("levelText");
+
+      const DT = 1000 / 60;
+      const CUBE_GRAVITY = 0.0304;
+      const CUBE_JUMP = 0.354;
+      const ORB_JUMP = 0.288;
+      const RED_ORB_JUMP = 0.413;
+      const PAD_JUMP = 0.45;
+      const SHIP_GRAVITY = 0.0105 * 0.95;
+      const SHIP_THRUST = 0.0135 * 0.98;
+      const TERMINAL = 0.5;
+      const SPEED = 10.39 / 60;
+      const PLAYER = { w: 0.72, h: 0.72 };
+      const CUBE_AIR_ROTATION_PER_BLOCK = 90;
+      const SHIP_MAX_PITCH = 15;
+      const BLOCK_CRASH_HITBOX_SCALE = 0.2;
+      const BLOCK_UNCLIP_LIMIT = 0.25;
+      const TOP_SCREEN_DEATH_MARGIN = 10;
+      const SHIP_SCREEN_DEATH_MARGIN = 12;
+
+      const colors = {
+        block: "#37a2ff",
+        spike: "#f5f7ff",
+        pad: "#ffd536",
+        "orb-yellow": "#ffd536",
+        "orb-green": "#35e26f",
+        "orb-blue": "#4e82ff",
+        "orb-red": "#ff4d5a",
+        "portal-blue": "#25c7ff",
+        "portal-orange": "#ff8c2d",
+        "portal-ship": "#b569ff",
+        "portal-cube": "#f5f7ff"
+      };
+
+      const solidTypes = new Set(["block"]);
+      const interactTypes = new Set([
+        "spike", "pad", "orb-yellow", "orb-green", "orb-blue", "orb-red",
+        "portal-blue", "portal-orange", "portal-ship", "portal-cube"
+      ]);
+
+      let objects = [
+        { type: "spike", x: 10, y: 0 }, { type: "orb-yellow", x: 16, y: 2 },
+        { type: "pad", x: 22, y: 0 }, { type: "block", x: 30, y: 1 },
+        { type: "block", x: 31, y: 1 }, { type: "portal-orange", x: 38, y: 2 },
+        { type: "block", x: 45, y: 6 }, { type: "block", x: 46, y: 6 },
+        { type: "portal-blue", x: 52, y: 2 }, { type: "portal-ship", x: 58, y: 2 },
+        { type: "orb-red", x: 66, y: 3 }, { type: "portal-cube", x: 76, y: 2 },
+        { type: "spike", x: 82, y: 0 }
+      ];
+
+      let tool = "block";
+      let editorMode = "place";
+      let selectedIndex = -1;
+      let placementRot = 0;
+      let mode = "editor";
+      let scale = 48;
+      let camera = { x: -2, y: -2 };
+      let pointer = { down: false, moved: false, id: null, sx: 0, sy: 0, cx: 0, cy: 0 };
+      let keys = { jump: false, pressed: false };
+      let raf = 0;
+      let last = performance.now();
+      let accum = 0;
+      let touched = new Set();
+      let player = freshPlayer();
+
+      function freshPlayer() {
+        return {
+          x: 1,
+          y: 0,
+          prevY: 0,
+          w: PLAYER.w,
+          h: PLAYER.h,
+          vy: 0,
+          rot: 0,
+          mode: "cube",
+          gravity: -1,
+          grounded: true,
+          dead: false,
+          finished: false,
+          progress: 0
+        };
+      }
+
+      function resize() {
+        const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = Math.floor(rect.width * dpr);
+        canvas.height = Math.floor(rect.height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        scale = Math.max(32, Math.min(58, rect.width / 18));
+      }
+
+      function screenToWorld(px, py) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+          x: camera.x + (px - rect.left) / scale,
+          y: camera.y + (rect.height - (py - rect.top)) / scale
+        };
+      }
+
+      function worldToScreen(x, y) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+          x: (x - camera.x) * scale,
+          y: rect.height - (y - camera.y) * scale
+        };
+      }
+
+      function objectAt(x, y) {
+        return objects.find(o => o.x === x && o.y === y);
+      }
+
+      function objectIndexAt(x, y) {
+        for (let i = objects.length - 1; i >= 0; i--) {
+          if (objects[i].x === x && objects[i].y === y) return i;
+        }
+        return -1;
+      }
+
+      function selectedObject() {
+        return objects[selectedIndex] || null;
+      }
+
+      function normalizeRot(rot) {
+        return ((rot % 360) + 360) % 360;
+      }
+
+      function setEditorMode(next) {
+        editorMode = next;
+        document.getElementById("placeModeBtn").classList.toggle("active", next === "place");
+        document.getElementById("editModeBtn").classList.toggle("active", next === "edit");
+        if (next === "place") selectedIndex = -1;
+      }
+
+      function setTool(next) {
+        tool = next;
+        toolButtons.forEach(btn => btn.classList.toggle("active", btn.dataset.tool === tool));
+        const selected = selectedObject();
+        if (mode === "editor" && editorMode === "edit" && selected) {
+          if (next === "eraser") {
+            objects.splice(selectedIndex, 1);
+            selectedIndex = -1;
+          } else {
+            selected.type = next;
+          }
+        }
+        readout.textContent = `Tool: ${tool}`;
+      }
+
+      function setMode(next, keepEndOverlay = false) {
+        mode = next;
+        modeLabel.textContent = next === "playing" ? "Playing" : "Editor";
+        document.getElementById("playBtn").classList.toggle("active", next === "playing");
+        document.getElementById("stopBtn").classList.toggle("active", next === "editor");
+        canvas.style.cursor = next === "editor" ? "crosshair" : "pointer";
+        if (next === "playing") {
+          player = freshPlayer();
+          touched = new Set();
+          keys.pressed = false;
+          selectedIndex = -1;
+          endOverlay.classList.remove("show");
+          startOverlay.classList.remove("show");
+          camera.x = -2;
+          camera.y = -2;
+        } else if (!keepEndOverlay) {
+          endOverlay.classList.remove("show");
+        }
+      }
+
+      function aabb(a, b) {
+        return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+      }
+
+      function centeredRect(rect, scale) {
+        const w = rect.w * scale;
+        const h = rect.h * scale;
+        return {
+          x: rect.x + (rect.w - w) / 2,
+          y: rect.y + (rect.h - h) / 2,
+          w,
+          h
+        };
+      }
+
+      function objRect(o) {
+        if (o.type === "spike") return { x: o.x + 0.18, y: o.y, w: 0.64, h: 0.72 };
+        if (o.type.startsWith("orb")) return { x: o.x + 0.18, y: o.y + 0.18, w: 0.64, h: 0.64 };
+        if (o.type.startsWith("portal")) return { x: o.x + 0.12, y: o.y - 0.05, w: 0.76, h: 1.1 };
+        return { x: o.x, y: o.y, w: 1, h: 1 };
+      }
+
+      function topOf(o) { return o.y + 1; }
+      function bottomOf(o) { return o.y; }
+
+      function snapRotationToRightAngle(rot) {
+        return Math.round(rot / 90) * 90;
+      }
+
+      function rotateSelection(direction) {
+        const selected = selectedObject();
+        if (mode === "editor" && editorMode === "edit" && selected) {
+          selected.rot = normalizeRot((selected.rot || 0) + direction * 90);
+        } else if (mode === "editor") {
+          placementRot = normalizeRot(placementRot + direction * 90);
+        }
+      }
+
+      function visibleTopY() {
+        return camera.y + canvas.getBoundingClientRect().height / scale;
+      }
+
+      function visibleBottomY() {
+        return camera.y;
+      }
+
+      function tryUnclipFromBlock(o) {
+        if (player.mode !== "cube") return false;
+
+        if (player.gravity === -1) {
+          const targetY = topOf(o);
+          const lift = targetY - player.y;
+          if (lift >= 0 && lift <= BLOCK_UNCLIP_LIMIT) {
+            player.y = targetY;
+            player.vy = 0;
+            player.grounded = true;
+            return true;
+          }
+        } else {
+          const targetY = bottomOf(o) - player.h;
+          const drop = player.y - targetY;
+          if (drop >= 0 && drop <= BLOCK_UNCLIP_LIMIT) {
+            player.y = targetY;
+            player.vy = 0;
+            player.grounded = true;
+            return true;
+          }
+        }
+
+        return false;
+      }
+
+      function resolveShipBlockCollision(r) {
+        const prev = { x: player.x - SPEED, y: player.prevY, w: player.w, h: player.h };
+        const cameFromAbove = prev.y >= r.y + r.h && player.vy <= 0;
+        const cameFromBelow = prev.y + prev.h <= r.y && player.vy >= 0;
+
+        if (cameFromAbove) {
+          player.y = r.y + r.h;
+          player.vy = 0;
+          player.grounded = true;
+          return;
+        }
+
+        if (cameFromBelow) {
+          player.y = r.y - player.h;
+          player.vy = 0;
+          return;
+        }
+
+        const fromLeft = prev.x + prev.w <= r.x;
+        const fromRight = prev.x >= r.x + r.w;
+        if (fromLeft) {
+          player.x = r.x - player.w;
+        } else if (fromRight) {
+          player.x = r.x + r.w;
+        } else {
+          const pushLeft = Math.abs((player.x + player.w) - r.x);
+          const pushRight = Math.abs((r.x + r.w) - player.x);
+          player.x = pushLeft < pushRight ? r.x - player.w : r.x + r.w;
+        }
+      }
+
+      function jump(power) {
+        player.vy = -player.gravity * power;
+        player.grounded = false;
+      }
+
+      function resolveGroundCollision() {
+        if (player.y >= 0) return false;
+
+        if (player.mode === "ship") {
+          player.y = 0;
+          player.vy = 0;
+          player.grounded = player.gravity === -1;
+          return false;
+        }
+
+        if (player.vy <= 0 && player.prevY >= 0) {
+          player.y = 0;
+          player.vy = 0;
+          player.grounded = true;
+          return false;
+        }
+
+        const crashRect = centeredRect({ x: player.x, y: player.y, w: player.w, h: player.h }, BLOCK_CRASH_HITBOX_SCALE);
+        const groundRect = {
+          x: player.x - 1,
+          y: -1000,
+          w: player.w + 2,
+          h: 1000
+        };
+
+        if (aabb(crashRect, groundRect)) {
+          die("You hit the ground.");
+          return true;
+        }
+
+        player.y = 0;
+        return false;
+      }
+
+      function die(reason) {
+        player.dead = true;
+        endTitle.textContent = "Crashed";
+        endText.textContent = reason;
+        setMode("editor", true);
+        endOverlay.classList.add("show");
+      }
+
+      function complete() {
+        player.finished = true;
+        endTitle.textContent = "Complete";
+        endText.textContent = "You reached the level end screen.";
+        setMode("editor", true);
+        endOverlay.classList.add("show");
+      }
+
+      function endX() {
+        if (!objects.length) return 30;
+        return Math.max(...objects.map(o => o.x)) + 6;
+      }
+
+      function step() {
+        if (mode !== "playing" || player.dead || player.finished) return;
+        const jumpPressed = keys.pressed;
+
+        player.prevY = player.y;
+        if (player.mode === "cube") {
+          if (keys.jump && player.grounded) jump(CUBE_JUMP);
+          player.vy += player.gravity * CUBE_GRAVITY;
+        } else {
+          const accel = player.gravity * SHIP_GRAVITY + (keys.jump ? -player.gravity * SHIP_THRUST : 0);
+          player.vy += accel;
+        }
+
+        player.vy = Math.max(-TERMINAL, Math.min(TERMINAL, player.vy));
+        player.x += SPEED;
+        player.y += player.vy;
+        player.grounded = false;
+
+        const solids = objects.filter(o => solidTypes.has(o.type));
+        const prevBottom = player.prevY;
+        const prevTop = player.prevY + player.h;
+
+        for (const o of solids) {
+          const r = objRect(o);
+          const pr = { x: player.x, y: player.y, w: player.w, h: player.h };
+          if (!aabb(pr, r)) continue;
+
+          const landedNormal = player.gravity === -1 && player.vy <= 0 && prevBottom >= topOf(o) - 0.02;
+          const landedReverse = player.gravity === 1 && player.vy >= 0 && prevTop <= bottomOf(o) + 0.02;
+
+          if (landedNormal) {
+            player.y = topOf(o);
+            player.vy = 0;
+            player.grounded = true;
+          } else if (landedReverse) {
+            player.y = bottomOf(o) - player.h;
+            player.vy = 0;
+            player.grounded = true;
+          } else if (player.mode === "ship") {
+            resolveShipBlockCollision(r);
+          } else if (tryUnclipFromBlock(o)) {
+            continue;
+          } else if (aabb(centeredRect(pr, BLOCK_CRASH_HITBOX_SCALE), r)) {
+            die("You ran into a block.");
+            return;
+          }
+        }
+
+        if (resolveGroundCollision()) return;
+        const pr = { x: player.x, y: player.y, w: player.w, h: player.h };
+        for (const o of objects.filter(o => interactTypes.has(o.type))) {
+          if (!aabb(pr, objRect(o))) continue;
+          const key = `${o.type}:${o.x}:${o.y}`;
+          const canUseOrb = player.mode === "cube" ? keys.jump : jumpPressed;
+          if (o.type === "spike") {
+            die("You hit a spike.");
+            return;
+          }
+          if (touched.has(key)) continue;
+          if (o.type === "pad") {
+            jump(PAD_JUMP);
+            touched.add(key);
+          } else if (o.type === "orb-yellow" && canUseOrb) {
+            jump(ORB_JUMP);
+            touched.add(key);
+          } else if (o.type === "orb-green" && canUseOrb) {
+            player.gravity *= -1;
+            jump(ORB_JUMP);
+            touched.add(key);
+          } else if (o.type === "orb-blue" && canUseOrb) {
+            player.gravity *= -1;
+            player.vy *= -0.35;
+            touched.add(key);
+          } else if (o.type === "orb-red" && canUseOrb) {
+            jump(RED_ORB_JUMP);
+            touched.add(key);
+          } else if (o.type === "portal-blue") {
+            player.gravity = -1;
+            touched.add(key);
+          } else if (o.type === "portal-orange") {
+            player.gravity = 1;
+            touched.add(key);
+          } else if (o.type === "portal-ship") {
+            player.mode = "ship";
+            touched.add(key);
+          } else if (o.type === "portal-cube") {
+            player.mode = "cube";
+            touched.add(key);
+          }
+        }
+
+        const screenDeathMargin = player.mode === "ship" ? SHIP_SCREEN_DEATH_MARGIN : TOP_SCREEN_DEATH_MARGIN;
+        if (player.y + player.h > visibleTopY() + screenDeathMargin) {
+          die("The player went too high.");
+          return;
+        }
+        if (player.y < visibleBottomY() - screenDeathMargin) {
+          die("The player went too far below the screen.");
+          return;
+        }
+        if (player.mode === "cube") {
+          if (player.grounded) {
+            player.rot = snapRotationToRightAngle(player.rot);
+          } else {
+            player.rot += -player.gravity * SPEED * CUBE_AIR_ROTATION_PER_BLOCK;
+          }
+        }
+        if (player.x > endX()) complete();
+        player.progress = Math.min(100, Math.max(0, (player.x / endX()) * 100));
+        camera.x = player.x - 4.5;
+        camera.y += ((player.mode === "ship" ? player.y - 3.8 : -2) - camera.y) * 0.08;
+        keys.pressed = false;
+      }
+
+      function drawGrid(w, h) {
+        const minX = Math.floor(camera.x) - 1;
+        const maxX = Math.ceil(camera.x + w / scale) + 1;
+        const minY = Math.floor(camera.y) - 1;
+        const maxY = Math.ceil(camera.y + h / scale) + 1;
+
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "rgba(255,255,255,.08)";
+        for (let x = minX; x <= maxX; x++) {
+          const p = worldToScreen(x, 0).x;
+          ctx.beginPath();
+          ctx.moveTo(p, 0);
+          ctx.lineTo(p, h);
+          ctx.stroke();
+        }
+        for (let y = minY; y <= maxY; y++) {
+          const p = worldToScreen(0, y).y;
+          ctx.beginPath();
+          ctx.moveTo(0, p);
+          ctx.lineTo(w, p);
+          ctx.stroke();
+        }
+
+        const ground = worldToScreen(0, 0).y;
+        ctx.strokeStyle = "rgba(255,213,54,.85)";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(0, ground);
+        ctx.lineTo(w, ground);
+        ctx.stroke();
+      }
+
+      function drawObject(o, index) {
+        const p = worldToScreen(o.x, o.y);
+        const s = scale;
+        ctx.save();
+        ctx.translate(p.x + s / 2, p.y - s / 2);
+        ctx.rotate(((o.rot || 0) * Math.PI) / 180);
+        if (o.type === "block") {
+          ctx.fillStyle = colors.block;
+          ctx.fillRect(-s / 2 + 2, -s / 2 + 2, s - 4, s - 4);
+          ctx.strokeStyle = "#e7f7ff";
+          ctx.lineWidth = 2;
+          ctx.strokeRect(-s / 2 + 5, -s / 2 + 5, s - 10, s - 10);
+        } else if (o.type === "spike") {
+          ctx.fillStyle = colors.spike;
+          ctx.strokeStyle = "#111318";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(0, -s / 2 + 5);
+          ctx.lineTo(s / 2 - 5, s / 2 - 3);
+          ctx.lineTo(-s / 2 + 5, s / 2 - 3);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        } else if (o.type === "pad") {
+          ctx.fillStyle = colors.pad;
+          ctx.beginPath();
+          ctx.ellipse(0, s * .38, s * .42, s * .13, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = "#8b5a08";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        } else if (o.type.startsWith("orb")) {
+          ctx.fillStyle = colors[o.type];
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.arc(0, 0, s * .25, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        } else if (o.type.startsWith("portal")) {
+          ctx.strokeStyle = colors[o.type];
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, s * .28, s * .52, 0, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.fillStyle = colors[o.type];
+          ctx.globalAlpha = .22;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          ctx.fillStyle = "#f8fbff";
+          ctx.font = `900 ${Math.max(12, s * .22)}px Pusab, Impact, sans-serif`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          const labels = { "portal-blue": "G", "portal-orange": "R", "portal-ship": "S", "portal-cube": "C" };
+          ctx.fillText(labels[o.type], 0, 0);
+        }
+        if (mode === "editor" && index === selectedIndex) {
+          ctx.strokeStyle = "#ffd536";
+          ctx.lineWidth = 3;
+          ctx.setLineDash([6, 5]);
+          ctx.strokeRect(-s / 2 + 2, -s / 2 + 2, s - 4, s - 4);
+          ctx.setLineDash([]);
+        }
+        ctx.restore();
+      }
+
+      function drawPlayer() {
+        const p = worldToScreen(player.x, player.y);
+        const s = scale;
+        ctx.save();
+        ctx.translate(p.x + player.w * s / 2, p.y - player.h * s / 2);
+        if (player.mode === "ship") {
+          const pitch = Math.max(-SHIP_MAX_PITCH, Math.min(SHIP_MAX_PITCH, -player.vy / TERMINAL * SHIP_MAX_PITCH));
+          ctx.rotate((pitch * Math.PI) / 180);
+          ctx.fillStyle = "#ff4d5a";
+          ctx.strokeStyle = "#ffe7eb";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(player.w * s * .48, 0);
+          ctx.lineTo(-player.w * s * .38, -player.h * s * .32);
+          ctx.lineTo(-player.w * s * .22, 0);
+          ctx.lineTo(-player.w * s * .38, player.h * s * .32);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        } else {
+          ctx.rotate((player.rot * Math.PI) / 180);
+          ctx.fillStyle = "#ffd536";
+          ctx.strokeStyle = "#3c2c00";
+          ctx.lineWidth = 3;
+          ctx.fillRect(-player.w * s / 2, -player.h * s / 2, player.w * s, player.h * s);
+          ctx.strokeRect(-player.w * s / 2, -player.h * s / 2, player.w * s, player.h * s);
+          ctx.fillStyle = "#111318";
+          ctx.fillRect(-s * .16, -s * .12, s * .1, s * .1);
+          ctx.fillRect(s * .1, -s * .12, s * .1, s * .1);
+        }
+        ctx.restore();
+      }
+
+      function drawHud(w) {
+        if (mode !== "playing") return;
+        ctx.fillStyle = "rgba(0,0,0,.36)";
+        ctx.fillRect(18, 18, w - 36, 14);
+        ctx.fillStyle = "#ffd536";
+        ctx.fillRect(18, 18, (w - 36) * player.progress / 100, 14);
+        ctx.strokeStyle = "#f8fbff";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(18, 18, w - 36, 14);
+      }
+
+      function draw() {
+        const rect = canvas.getBoundingClientRect();
+        const w = rect.width;
+        const h = rect.height;
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = "#172033";
+        ctx.fillRect(0, 0, w, h);
+        drawGrid(w, h);
+        objects.forEach((object, index) => drawObject(object, index));
+
+        const ex = endX();
+        const ep = worldToScreen(ex, 5);
+        ctx.strokeStyle = "#35e26f";
+        ctx.lineWidth = 4;
+        ctx.setLineDash([12, 8]);
+        ctx.beginPath();
+        ctx.moveTo(ep.x, 0);
+        ctx.lineTo(ep.x, h);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        if (mode === "playing") drawPlayer();
+        drawHud(w);
+
+        readout.textContent = mode === "playing"
+          ? `${player.mode} | ${Math.round(player.progress)}% | ${keys.jump ? "jump held" : "jump ready"}`
+          : editorMode === "edit"
+            ? `${selectedObject() ? `Selected: ${selectedObject().type} ${selectedObject().rot || 0}deg` : "No selection"} | ${objects.length} objects`
+            : `Place: ${tool} ${placementRot}deg | ${objects.length} objects`;
+      }
+
+      function loop(now) {
+        const elapsed = Math.min(80, now - last);
+        last = now;
+        accum += elapsed;
+        let frames = 0;
+        while (accum >= DT && frames < 4) {
+          step();
+          accum -= DT;
+          frames++;
+        }
+        draw();
+        raf = requestAnimationFrame(loop);
+      }
+
+      function placeAt(clientX, clientY) {
+        const w = screenToWorld(clientX, clientY);
+        const gx = Math.floor(w.x);
+        const gy = Math.floor(w.y);
+        const existing = objectAt(gx, gy);
+        if (tool === "eraser") {
+          objects = objects.filter(o => !(o.x === gx && o.y === gy));
+          selectedIndex = -1;
+        } else if (existing) {
+          existing.type = tool;
+          existing.rot = placementRot;
+        } else {
+          objects.push({ type: tool, x: gx, y: gy, rot: placementRot });
+        }
+      }
+
+      function exportLevel() {
+        return JSON.stringify({
+          version: 1,
+          objects: objects
+            .map(o => ({ type: o.type, x: o.x, y: o.y, rot: normalizeRot(o.rot || 0) }))
+            .sort((a, b) => a.x - b.x || a.y - b.y)
+        }, null, 2);
+      }
+
+      function importLevel(text) {
+        const data = JSON.parse(text);
+        if (!data || !Array.isArray(data.objects)) throw new Error("Level JSON needs an objects array.");
+        objects = data.objects
+          .filter(o => o && typeof o.x === "number" && typeof o.y === "number" && colors[o.type])
+          .map(o => ({ type: o.type, x: Math.round(o.x), y: Math.round(o.y), rot: normalizeRot(Number(o.rot) || 0) }));
+        selectedIndex = -1;
+      }
+
+      toolButtons.forEach(btn => btn.addEventListener("click", () => setTool(btn.dataset.tool)));
+
+      document.getElementById("placeModeBtn").addEventListener("click", () => setEditorMode("place"));
+      document.getElementById("editModeBtn").addEventListener("click", () => setEditorMode("edit"));
+      document.getElementById("playBtn").addEventListener("click", () => setMode("playing"));
+      document.getElementById("stopBtn").addEventListener("click", () => setMode("editor"));
+      document.getElementById("startPlayBtn").addEventListener("click", () => setMode("playing"));
+      document.getElementById("startEditBtn").addEventListener("click", () => {
+        startOverlay.classList.remove("show");
+        setMode("editor");
+      });
+      document.getElementById("helpBtn").addEventListener("click", () => helpOverlay.classList.add("show"));
+      document.getElementById("startHelpBtn").addEventListener("click", () => helpOverlay.classList.add("show"));
+      document.getElementById("closeHelpBtn").addEventListener("click", () => helpOverlay.classList.remove("show"));
+      document.getElementById("againBtn").addEventListener("click", () => setMode("playing"));
+      document.getElementById("backEditBtn").addEventListener("click", () => setMode("editor"));
+
+      document.getElementById("saveBtn").addEventListener("click", () => {
+        levelText.value = exportLevel();
+        ioPanel.classList.add("show");
+      });
+      document.getElementById("loadBtn").addEventListener("click", () => {
+        if (!levelText.value.trim()) levelText.value = exportLevel();
+        ioPanel.classList.add("show");
+      });
+      document.getElementById("closeIoBtn").addEventListener("click", () => ioPanel.classList.remove("show"));
+      document.getElementById("copyBtn").addEventListener("click", async () => {
+        levelText.select();
+        try { await navigator.clipboard.writeText(levelText.value); } catch (_) { document.execCommand("copy"); }
+      });
+      document.getElementById("applyBtn").addEventListener("click", () => {
+        try {
+          importLevel(levelText.value);
+          ioPanel.classList.remove("show");
+        } catch (err) {
+          alert(err.message);
+        }
+      });
+      document.getElementById("clearBtn").addEventListener("click", () => {
+        objects = [];
+        selectedIndex = -1;
+      });
+
+      canvas.addEventListener("pointerdown", e => {
+        canvas.setPointerCapture(e.pointerId);
+        pointer = {
+          down: true,
+          moved: false,
+          id: e.pointerId,
+          sx: e.clientX,
+          sy: e.clientY,
+          cx: e.clientX,
+          cy: e.clientY,
+          dragObject: false,
+          startObjectX: 0,
+          startObjectY: 0
+        };
+        if (mode === "playing") {
+          if (!keys.jump) keys.pressed = true;
+          keys.jump = true;
+        }
+        if (mode === "editor" && editorMode === "edit") {
+          const w = screenToWorld(e.clientX, e.clientY);
+          const hitIndex = objectIndexAt(Math.floor(w.x), Math.floor(w.y));
+          selectedIndex = hitIndex;
+          if (hitIndex >= 0) {
+            pointer.dragObject = true;
+            pointer.startObjectX = objects[hitIndex].x;
+            pointer.startObjectY = objects[hitIndex].y;
+          }
+        }
+      });
+
+      canvas.addEventListener("pointermove", e => {
+        if (!pointer.down || pointer.id !== e.pointerId) return;
+        const dx = e.clientX - pointer.cx;
+        const dy = e.clientY - pointer.cy;
+        if (Math.hypot(e.clientX - pointer.sx, e.clientY - pointer.sy) > 5) pointer.moved = true;
+        if (mode === "editor" && pointer.moved && pointer.dragObject && selectedObject()) {
+          const dxCells = Math.round((e.clientX - pointer.sx) / scale);
+          const dyCells = Math.round((pointer.sy - e.clientY) / scale);
+          const selected = selectedObject();
+          selected.x = pointer.startObjectX + dxCells;
+          selected.y = pointer.startObjectY + dyCells;
+        } else if (mode === "editor" && pointer.moved) {
+          camera.x -= dx / scale;
+          camera.y += dy / scale;
+        }
+        pointer.cx = e.clientX;
+        pointer.cy = e.clientY;
+      });
+
+      canvas.addEventListener("pointerup", e => {
+        if (pointer.id !== e.pointerId) return;
+        if (mode === "editor" && !pointer.moved && editorMode === "place") placeAt(e.clientX, e.clientY);
+        if (mode === "playing") keys.jump = false;
+        pointer.down = false;
+      });
+
+      canvas.addEventListener("pointercancel", () => {
+        pointer.down = false;
+        keys.jump = false;
+        keys.pressed = false;
+      });
+
+      window.addEventListener("keydown", e => {
+        if (e.code === "Space" || e.code === "KeyW" || e.code === "ArrowUp") {
+          e.preventDefault();
+          if (!keys.jump && mode === "playing") keys.pressed = true;
+          keys.jump = true;
+          if (startOverlay.classList.contains("show")) setMode("playing");
+        }
+        const keyMap = {
+          Digit1: "block", Digit2: "spike", Digit3: "pad", Digit4: "orb-yellow",
+          Digit5: "orb-green", Digit6: "orb-blue", Digit7: "orb-red", Digit8: "portal-blue",
+          Digit9: "portal-orange", Digit0: "eraser"
+        };
+        if (keyMap[e.code]) setTool(keyMap[e.code]);
+        if (e.code === "KeyQ") rotateSelection(-1);
+        if (e.code === "KeyE") rotateSelection(1);
+        if ((e.code === "Backspace" || e.code === "Delete") && mode === "editor" && selectedObject()) {
+          e.preventDefault();
+          objects.splice(selectedIndex, 1);
+          selectedIndex = -1;
+        }
+      });
+
+      window.addEventListener("keyup", e => {
+        if (e.code === "Space" || e.code === "KeyW" || e.code === "ArrowUp") {
+          e.preventDefault();
+          keys.jump = false;
+        }
+      });
+
+      window.addEventListener("resize", resize);
+      resize();
+      setEditorMode("place");
+      setMode("editor");
+      startOverlay.classList.add("show");
+      raf = requestAnimationFrame(loop);
+    })();
+  </script>
+</body>
+</html>
