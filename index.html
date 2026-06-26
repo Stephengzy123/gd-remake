@@ -498,6 +498,7 @@
       const TERMINAL = 0.5;
       const SPEED = 10.39 / 60;
       const PLAYER = { w: 0.72, h: 0.72 };
+      const SPAWN = { x: 1, y: 0 };
       const CUBE_AIR_ROTATION_PER_BLOCK = 45;
       const SHIP_MAX_PITCH = 15;
       const BLOCK_CRASH_HITBOX_SCALE = 0.2;
@@ -541,7 +542,7 @@
       let placementRot = 0;
       let mode = "editor";
       let scale = 48;
-      let camera = { x: -2, y: -2 };
+      let camera = { x: -1.5, y: -2 };
       let pointer = { down: false, moved: false, id: null, sx: 0, sy: 0, cx: 0, cy: 0 };
       let keys = { jump: false, pressed: false };
       let raf = 0;
@@ -552,8 +553,8 @@
 
       function freshPlayer() {
         return {
-          x: 1,
-          y: 0,
+          x: SPAWN.x,
+          y: SPAWN.y,
           prevY: 0,
           w: PLAYER.w,
           h: PLAYER.h,
@@ -647,7 +648,7 @@
           selectedIndex = -1;
           endOverlay.classList.remove("show");
           startOverlay.classList.remove("show");
-          camera.x = -2;
+          camera.x = -1.5;
           camera.y = -2;
         } else if (!keepEndOverlay) {
           endOverlay.classList.remove("show");
@@ -1062,6 +1063,39 @@
         ctx.restore();
       }
 
+      function drawSpawnMarker(h) {
+        if (mode !== "editor") return;
+
+        const start = worldToScreen(SPAWN.x, 0);
+        const ghost = worldToScreen(SPAWN.x, SPAWN.y);
+        const s = scale;
+
+        ctx.save();
+        ctx.strokeStyle = "rgba(255,213,54,.9)";
+        ctx.lineWidth = 3;
+        ctx.setLineDash([10, 8]);
+        ctx.beginPath();
+        ctx.moveTo(start.x, 0);
+        ctx.lineTo(start.x, h);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.globalAlpha = .42;
+        ctx.fillStyle = "#ffd536";
+        ctx.strokeStyle = "#3c2c00";
+        ctx.lineWidth = 3;
+        ctx.fillRect(ghost.x, ghost.y - PLAYER.h * s, PLAYER.w * s, PLAYER.h * s);
+        ctx.strokeRect(ghost.x, ghost.y - PLAYER.h * s, PLAYER.w * s, PLAYER.h * s);
+        ctx.globalAlpha = 1;
+
+        ctx.fillStyle = "#ffd536";
+        ctx.font = `900 ${Math.max(12, s * .22)}px Pusab, Impact, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
+        ctx.fillText("START", start.x, Math.max(24, ghost.y - PLAYER.h * s - 8));
+        ctx.restore();
+      }
+
       function drawHud(w) {
         if (mode !== "playing") return;
         ctx.fillStyle = "rgba(0,0,0,.36)";
@@ -1081,6 +1115,7 @@
         ctx.fillStyle = "#172033";
         ctx.fillRect(0, 0, w, h);
         drawGrid(w, h);
+        drawSpawnMarker(h);
         objects.forEach((object, index) => drawObject(object, index));
 
         const ex = endX();
