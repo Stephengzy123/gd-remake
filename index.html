@@ -1210,26 +1210,17 @@
           player.y = r.y + r.h;
           player.vy = 0;
           player.grounded = true;
-          return;
+          return false;
         }
 
         if (cameFromBelow) {
           player.y = r.y - player.h;
           player.vy = 0;
-          return;
+          return false;
         }
 
-        const fromLeft = prev.x + prev.w <= r.x;
-        const fromRight = prev.x >= r.x + r.w;
-        if (fromLeft) {
-          player.x = r.x - player.w;
-        } else if (fromRight) {
-          player.x = r.x + r.w;
-        } else {
-          const pushLeft = Math.abs((player.x + player.w) - r.x);
-          const pushRight = Math.abs((r.x + r.w) - player.x);
-          player.x = pushLeft < pushRight ? r.x - player.w : r.x + r.w;
-        }
+        die("YOU DIED");
+        return true;
       }
 
       function jump(power) {
@@ -1331,7 +1322,7 @@
             player.vy = 0;
             player.grounded = true;
           } else if (player.mode === "ship") {
-            resolveShipBlockCollision(r);
+            if (resolveShipBlockCollision(r)) return;
           } else if (tryUnclipFromBlock(o)) {
             continue;
           } else if (aabb(centeredRect(pr, BLOCK_CRASH_HITBOX_SCALE), r)) {
