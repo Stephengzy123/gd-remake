@@ -301,10 +301,18 @@
       font: 700 15px/1.45 Pusab, "Arial Black", Impact, sans-serif;
     }
 
+    .modal p:empty {
+      display: none;
+    }
+
     .modal .actions {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
+    }
+
+    .modal .actions.split {
+      justify-content: space-between;
     }
 
     .help-list {
@@ -452,8 +460,8 @@
         <div class="modal">
           <h1 id="endTitle">Complete</h1>
           <p id="endText">You reached the end marker.</p>
-          <div class="actions">
-            <button class="cmd active" id="againBtn">Again</button>
+          <div class="actions split">
+            <button class="cmd active" id="againBtn">Restart</button>
             <button class="cmd" id="backEditBtn">Editor</button>
           </div>
         </div>
@@ -526,7 +534,9 @@
         "portal-blue", "portal-orange", "portal-ship", "portal-cube"
       ]);
 
-      let objects = [
+      // Built-in level: paste your exported level's "objects" array here.
+      // Keep this as an array of objects like { type: "block", x: 10, y: 0, rot: 0 }.
+      const DEFAULT_LEVEL_OBJECTS = [
         { type: "spike", x: 10, y: 0 }, { type: "orb-yellow", x: 16, y: 2 },
         { type: "pad", x: 22, y: 0 }, { type: "block", x: 30, y: 1 },
         { type: "block", x: 31, y: 1 }, { type: "portal-orange", x: 38, y: 2 },
@@ -535,6 +545,8 @@
         { type: "orb-red", x: 66, y: 3 }, { type: "portal-cube", x: 76, y: 2 },
         { type: "spike", x: 82, y: 0 }
       ];
+
+      let objects = DEFAULT_LEVEL_OBJECTS.map(o => ({ ...o, rot: normalizeRot(o.rot || 0) }));
 
       let tool = "block";
       let editorMode = "place";
@@ -799,8 +811,8 @@
 
       function die(reason) {
         player.dead = true;
-        endTitle.textContent = "Crashed";
-        endText.textContent = reason;
+        endTitle.textContent = "YOU DIED";
+        endText.textContent = "";
         setMode("editor", true);
         endOverlay.classList.add("show");
       }
@@ -1295,9 +1307,12 @@
       window.addEventListener("keydown", e => {
         if (e.code === "Space" || e.code === "KeyW" || e.code === "ArrowUp") {
           e.preventDefault();
+          if (startOverlay.classList.contains("show") || endOverlay.classList.contains("show")) {
+            setMode("playing");
+            return;
+          }
           if (!keys.jump && mode === "playing") keys.pressed = true;
           keys.jump = true;
-          if (startOverlay.classList.contains("show")) setMode("playing");
         }
         const keyMap = {
           Digit1: "block", Digit2: "spike", Digit3: "pad", Digit4: "orb-yellow",
