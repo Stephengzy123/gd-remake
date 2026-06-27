@@ -534,19 +534,473 @@
         "portal-blue", "portal-orange", "portal-ship", "portal-cube"
       ]);
 
-      // Built-in level: paste your exported level's "objects" array here.
-      // Keep this as an array of objects like { type: "block", x: 10, y: 0, rot: 0 }.
-      const DEFAULT_LEVEL_OBJECTS = [
-        { type: "spike", x: 10, y: 0 }, { type: "orb-yellow", x: 16, y: 2 },
-        { type: "pad", x: 22, y: 0 }, { type: "block", x: 30, y: 1 },
-        { type: "block", x: 31, y: 1 }, { type: "portal-orange", x: 38, y: 2 },
-        { type: "block", x: 45, y: 6 }, { type: "block", x: 46, y: 6 },
-        { type: "portal-blue", x: 52, y: 2 }, { type: "portal-ship", x: 58, y: 2 },
-        { type: "orb-red", x: 66, y: 3 }, { type: "portal-cube", x: 76, y: 2 },
-        { type: "spike", x: 82, y: 0 }
-      ];
+      // Built-in level: paste either the full exported JSON or just its "objects" array here.
+      // Valid entries look like { type: "block", x: 10, y: 0, rot: 0 }.
+      const DEFAULT_LEVEL =
+        {
+  "version": 1,
+  "objects": [
+    {
+      "type": "block",
+      "x": 9,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 9,
+      "y": 1,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 12,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 12,
+      "y": 1,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 12,
+      "y": 2,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 13,
+      "y": 2,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 14,
+      "y": 2,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 17,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 17,
+      "y": 1,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 17,
+      "y": 2,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 17,
+      "y": 3,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 18,
+      "y": 3,
+      "rot": 0
+    },
+    {
+      "type": "pad",
+      "x": 18,
+      "y": 4,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 21,
+      "y": 5,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 21,
+      "y": 6,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 24,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 25,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 26,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 26,
+      "y": 1,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 27,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 27,
+      "y": 1,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 27,
+      "y": 2,
+      "rot": 0
+    },
+    {
+      "type": "pad",
+      "x": 27,
+      "y": 3,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 28,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 29,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 30,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 31,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 32,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "portal-ship",
+      "x": 32,
+      "y": 1,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 33,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 33,
+      "y": 2,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 33,
+      "y": 3,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 33,
+      "y": 4,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 34,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 34,
+      "y": 2,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 35,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 35,
+      "y": 3,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 36,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 36,
+      "y": 4,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 37,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 37,
+      "y": 5,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 38,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "portal-orange",
+      "x": 38,
+      "y": 1,
+      "rot": 0
+    },
+    {
+      "type": "portal-orange",
+      "x": 38,
+      "y": 2,
+      "rot": 0
+    },
+    {
+      "type": "portal-orange",
+      "x": 38,
+      "y": 3,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 38,
+      "y": 4,
+      "rot": 180
+    },
+    {
+      "type": "block",
+      "x": 38,
+      "y": 6,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 39,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 39,
+      "y": 5,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 40,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 40,
+      "y": 4,
+      "rot": 180
+    },
+    {
+      "type": "spike",
+      "x": 41,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 41,
+      "y": 3,
+      "rot": 180
+    },
+    {
+      "type": "block",
+      "x": 41,
+      "y": 4,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 42,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 42,
+      "y": 3,
+      "rot": 180
+    },
+    {
+      "type": "block",
+      "x": 42,
+      "y": 4,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 43,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 43,
+      "y": 3,
+      "rot": 180
+    },
+    {
+      "type": "block",
+      "x": 43,
+      "y": 4,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 44,
+      "y": 3,
+      "rot": 180
+    },
+    {
+      "type": "block",
+      "x": 44,
+      "y": 4,
+      "rot": 0
+    },
+    {
+      "type": "portal-cube",
+      "x": 45,
+      "y": 1,
+      "rot": 0
+    },
+    {
+      "type": "portal-cube",
+      "x": 45,
+      "y": 2,
+      "rot": 0
+    },
+    {
+      "type": "portal-blue",
+      "x": 46,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "portal-blue",
+      "x": 46,
+      "y": 1,
+      "rot": 0
+    },
+    {
+      "type": "portal-blue",
+      "x": 46,
+      "y": 2,
+      "rot": 0
+    },
+    {
+      "type": "portal-blue",
+      "x": 46,
+      "y": 3,
+      "rot": 0
+    },
+    {
+      "type": "portal-blue",
+      "x": 46,
+      "y": 4,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 56,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 56,
+      "y": 1,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 62,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 65,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "block",
+      "x": 65,
+      "y": 1,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 69,
+      "y": 0,
+      "rot": 0
+    },
+    {
+      "type": "spike",
+      "x": 70,
+      "y": 0,
+      "rot": 0
+    }
+  ]
+}
+      ;
 
-      let objects = DEFAULT_LEVEL_OBJECTS.map(o => ({ ...o, rot: normalizeRot(o.rot || 0) }));
+      let objects = normalizeLevelObjects(DEFAULT_LEVEL);
 
       let tool = "block";
       let editorMode = "place";
@@ -623,6 +1077,14 @@
 
       function normalizeRot(rot) {
         return ((rot % 360) + 360) % 360;
+      }
+
+      function normalizeLevelObjects(level) {
+        const source = Array.isArray(level) ? level : level.objects;
+        if (!Array.isArray(source)) return [];
+        return source
+          .filter(o => o && typeof o.x === "number" && typeof o.y === "number" && colors[o.type])
+          .map(o => ({ type: o.type, x: Math.round(o.x), y: Math.round(o.y), rot: normalizeRot(Number(o.rot) || 0) }));
       }
 
       function setEditorMode(next) {
@@ -1193,9 +1655,7 @@
       function importLevel(text) {
         const data = JSON.parse(text);
         if (!data || !Array.isArray(data.objects)) throw new Error("Level JSON needs an objects array.");
-        objects = data.objects
-          .filter(o => o && typeof o.x === "number" && typeof o.y === "number" && colors[o.type])
-          .map(o => ({ type: o.type, x: Math.round(o.x), y: Math.round(o.y), rot: normalizeRot(Number(o.rot) || 0) }));
+        objects = normalizeLevelObjects(data);
         selectedIndex = -1;
       }
 
